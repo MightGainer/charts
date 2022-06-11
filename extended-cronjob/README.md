@@ -18,6 +18,8 @@ activeDeadlineSeconds: 160
 container_name: example-name
 container_image: some-image
 secretsVersion: "1.0.0" # update this number to trigger secrets redeploy
+secrets:
+  Common_Secret: "This secret will be injected in all jobs" 
 
 cronjobs:
   job1-name:
@@ -26,16 +28,13 @@ cronjobs:
       - name: "S3__ServiceUrl"
         value: "https://s3.domain.net"
     secrets:
-      - key: "S3__AccessKey"
-        value: "#{S3__AccessKey}"
-      - key: "S3__SecretAccessKey"
-        value: "#{S3__SecretAccessKey}"
+      S3__AccessKey: "#{S3__AccessKey}"
+      S3__SecretAccessKey: "#{S3__SecretAccessKey}"
   job2-name:
     overrided_container_image: another-image
     env:
       - name: "S3__ServiceUrl"
         value: "https://myawesomesite.blob.core.windows.net"
     secrets:
-      - key: "S3__ConnectionString"
-        value: "#{S3__ConnectionString}"
+      S3__ConnectionString: "#{S3__ConnectionString}"
 ```
