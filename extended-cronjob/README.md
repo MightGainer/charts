@@ -21,7 +21,7 @@ cronjobs:
   job1-name:
     env:
       - name: "S3__ServiceUrl"
-        value: "https://s3.yandexcloud.net"
+        value: "https://s3.domain.net"
     secrets:
       - key: "S3__AccessKey"
         value: "#{S3__AccessKey}"
