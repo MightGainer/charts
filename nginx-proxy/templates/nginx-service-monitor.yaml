@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Values.name }}
+spec:
+  endpoints:
+  - path: /metrics
+    port: exporter
+    interval: 15s
+  - path: /metrics
+    port: log-exporter
+    interval: 15s
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}

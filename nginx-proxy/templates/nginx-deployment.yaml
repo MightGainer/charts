@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 10
+      maxUnavailable: 0
+  replicas: {{ .Values.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: nginx-conf
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+          readOnly: true
+        resources:
+          requests:
+            memory: {{ .Values.resources.requests.memory }}
+            cpu: {{ .Values.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.resources.limits.memory }}
+            cpu: {{ .Values.resources.limits.cpu }}
+      - name: nginx-prometheus-exporter
+        image: nginx/nginx-prometheus-exporter:0.10.0
+        args: ["-nginx.scrape-uri", "http://localhost:8080/nginx_status"]
+        ports:
+        - containerPort: 9113
+        resources:
+          requests:
+            memory: "50Mi"
+            cpu: "10m"
+          limits:
+            memory: "100Mi"
+            cpu: "100m"
+      - name: nginx-prometheus-log-exporter
+        image: quay.io/martinhelmich/prometheus-nginxlog-exporter:v1.9.2
+        args: ["-config-file", "/etc/prometheus-nginxlog-exporter/config.hcl"]
+        ports:
+        - containerPort: 4040
+        resources:
+          requests:
+            memory: "50Mi"
+            cpu: "10m"
+          limits:
+            memory: "100Mi"
+            cpu: "100m"
+        volumeMounts:
+        - name: nginx-log-exporter-config
+          mountPath: /etc/prometheus-nginxlog-exporter
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf
+          items:
+            - key: nginx.conf
+              path: nginx.conf
+      - name: nginx-log-exporter-config
+        configMap:
+          name: nginx-log-exporter-config

@@ -1,0 +1,23 @@
+name: nginx-proxy
+replicas: 3
+
+hpa:
+  enabled: false
+  resource: cpu
+  averageUtilization: 30
+  minReplicas: 5
+  maxReplicas: 15
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "150m"
+  limits:
+    memory: "256Mi"
+    cpu: "250m"
+
+proxy:
+  protocol: https
+  workerProcesses: auto
+
+prometheusRules: 
+  enabled: true

@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-nginx-conf
+data:
+{{- if .Values.config }}
+  nginx.conf: {{ .Values.config }}
+{{- else }}
+  nginx.conf: |
+    user nginx;
+    worker_processes {{ .Values.proxy.workerProcesses }};
+    error_log /dev/stdout info;
+    
+    events {
+      worker_connections  1024;
+    }
+    
+    http {
+      log_format main "$remote_addr - $remote_user [$time_local] \"$request\" rt=$request_time $status $body_bytes_sent \"$http_referer\" \"$http_user_agent\" \"$http_x_forwarded_for\"";
+      
+      access_log syslog:server=127.0.0.1:8513,tag=nginx,severity=info main;
+      
+      server {
+        listen       8080;
+        server_name  localhost;
+        proxy_read_timeout 6;
+        proxy_connect_timeout 6;
+        proxy_send_timeout 6;
+        location ~ ^(?!/nginx_status).*$ {
+          proxy_pass {{ .Values.proxy.protocol }}://{{ .Values.proxy.url }};
+          {{- if .Values.proxy.setHeader }}
+          proxy_set_header Host {{ .Values.proxy.url }};
+          {{- end }}
+          proxy_intercept_errors on;
+        }
+        
+        location /nginx_status {
+          stub_status;
+        }
+      }
+    }
+{{- end }}

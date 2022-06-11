@@ -1,0 +1,39 @@
+{{- if .Values.prometheusRules.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: k8s
+    role: alert-rules
+  name: prometheus-rule-{{ .Values.name }}
+spec:
+  groups:
+  - name: services.rules
+    rules:
+    - alert: PersonalizationProxy.ClientErrorRateHigh
+      annotations:
+        message: Personalization nginx proxy has too many 4xx status codes
+      expr: sum(rate(nginx_http_response_count_total{status=~"^4.."}[1m])) / sum(rate(nginx_http_response_count_total[1m])) * 100 > 5
+      for: 5m
+      labels:
+        severity: critical
+        service: {{ .Values.name }}
+
+    - alert: PersonalizationProxy.ErrorRateHigh
+      annotations:
+        message: Personalization nginx proxy has too many 5xx status codes
+      expr: sum(rate(nginx_http_response_count_total{status=~"^5.."}[1m])) / sum(rate(nginx_http_response_count_total[1m])) * 100 > 5
+      for: 5m
+      labels:
+        severity: critical
+        service: {{ .Values.name }}
+
+    - alert: PersonalizationProxy.ResponseLatencyHigh
+      annotations:
+        message: Personalization nginx proxy 0.99 percentile of response time is too high
+      expr: max(histogram_quantile(0.99, rate(nginx_http_response_time_seconds_hist_bucket[2m]))) > 3
+      for: 5m
+      labels:
+        severity: warning
+        service: {{ .Values.name }}
+{{- end }}
