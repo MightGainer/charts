@@ -1,0 +1,33 @@
+{{- $root := . -}}
+{{ range $k, $v := .Values.cronjobs }}
+
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ $k }}
+spec:
+  schedule: "{{ $v.schedule | default $root.Values.schedule }}"
+  successfulJobsHistoryLimit: {{ $v.successfulJobsHistoryLimit | default $root.Values.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ $v.failedJobsHistoryLimit | default $root.Values.failedJobsHistoryLimit }}
+  concurrencyPolicy: {{ $v.concurrencyPolicy | default $root.Values.concurrencyPolicy }}
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: {{ $v.activeDeadlineSeconds | default $root.Values.activeDeadlineSeconds }}
+      template:
+        spec:
+          imagePullSecrets:
+          - name: image-pull
+          containers:
+          - name: {{ $v.container_name | default $root.Values.container_name }}
+            image: {{ $v.container_image | default $root.Values.container_image }}
+            args: {{ $v.args | default $root.Values.defaultArgs }}
+            env:
+              {{- with $v.env }}
+              {{- toYaml . | nindent 14 }}
+              {{- end }}
+            envFrom:
+            - secretRef:
+                name: {{ regexReplaceAll "_" $k "" | lower }}-secrets
+          restartPolicy: OnFailure
+{{ end }}

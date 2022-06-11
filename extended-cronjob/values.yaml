@@ -1,0 +1,7 @@
+schedule: "*/1 * * * *" # Once a minute
+successfulJobsHistoryLimit: 0
+failedJobsHistoryLimit: 0
+concurrencyPolicy: Forbid
+activeDeadlineSeconds: 160
+defaultArgs: []
+secretsVersion: "1"
