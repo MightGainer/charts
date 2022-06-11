@@ -38,3 +38,6 @@ proxy:
 prometheusRules: 
   enabled: true
 ```
+
+---
+Tags: helm, chart, nginx, reverse proxy, kubernetes, k8s
