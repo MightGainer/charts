@@ -16,6 +16,7 @@ By default a simple nginx reverse proxy config is implemented. But you can overr
 ```yaml
 name: nginx-proxy
 replicas: 3
+packageVersion: 1 # change it to trigger config redeploy
 
 hpa:
   enabled: true
