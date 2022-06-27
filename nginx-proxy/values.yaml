@@ -1,5 +1,6 @@
 name: nginx-proxy
 replicas: 3
+packageVersion: 1
 
 hpa:
   enabled: false
