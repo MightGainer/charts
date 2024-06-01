@@ -5,7 +5,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ $k }}
+  name: {{ regexReplaceAll "_" $k "" | lower }}
 spec:
   schedule: "{{ $v.schedule | default $root.Values.schedule }}"
   successfulJobsHistoryLimit: {{ $v.successfulJobsHistoryLimit | default $root.Values.successfulJobsHistoryLimit }}
