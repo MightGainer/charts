@@ -1,4 +1,4 @@
-{{- if .Values.proxy.hpa.enabled }}
+{{- if .Values.hpa.enabled }}
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -13,7 +13,7 @@ spec:
   metrics:
   - type: Resource
     resource:
-      name: {{ .Values.hpa.resource | default cpu }}
+      name: {{ .Values.hpa.resource | default "cpu" }}
       target:
         type: Utilization
         averageUtilization: {{ .Values.hpa.averageUtilization | default 30 }}

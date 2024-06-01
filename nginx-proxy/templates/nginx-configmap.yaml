@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Values.name }}-nginx-conf
   annotations:
-    checksum/config: {{ .Values.packageVersion }} # trigger secret redeploy
+    packageVersion: {{ .Values.packageVersion }} # trigger secret redeploy
 data:
 {{- if .Values.config }}
   nginx.conf: {{ .Values.config }}

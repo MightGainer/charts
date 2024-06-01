@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: nginx-log-exporter-config
+  name: {{ .Values.name }}-log-exporter-config
 data:
   config.hcl: |
     listen {

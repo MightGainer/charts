@@ -64,10 +64,10 @@ spec:
       volumes:
       - name: nginx-conf
         configMap:
-          name: nginx-conf
+          name: {{ .Values.name }}-nginx-conf
           items:
             - key: nginx.conf
               path: nginx.conf
       - name: nginx-log-exporter-config
         configMap:
-          name: nginx-log-exporter-config
+          name: {{ .Values.name }}-log-exporter-config
